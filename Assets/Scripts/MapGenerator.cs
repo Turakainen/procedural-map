@@ -26,14 +26,36 @@ public class MapGenerator
         wallRatio = 100f * wallToFloorPercent;
 
         RandomFillMap(map);
+
         FilterIsolatedWalls(ref map, 0, 3);
         FilterIsolatedWalls(ref map, 0, 3);
+        
         FilterIsolatedWalls(ref map, 3, 8);
         FilterIsolatedWalls(ref map, 3, 8);
+        
+        MakeBoundaries(map);
 
         return map;
     }
 
+    private void MakeBoundaries(Map map)
+    {
+        for (int i = 0; i < map.GetWidth(); i++)
+        {
+            map.dataGrid[0, i] = 0;
+            map.dataGrid[i, 0] = 0;
+
+            map.dataGrid[map.GetWidth() - 1, i] = 0;
+            map.dataGrid[i, map.GetHeight() - 1] = 0;
+        }
+    }
+
+    /// <summary>
+    /// Applys cellular automata to map with given rules
+    /// </summary>
+    /// <param name="map">Map</param>
+    /// <param name="minWallAmount">Change to floor when neighboring walls less than this</param>
+    /// <param name="maxWallAmount">Change to wall when neighboring walls greater than this</param>
     public void FilterIsolatedWalls(ref Map map, int minWallAmount, int maxWallAmount)
     {
         // Create temp map for calculated cells
@@ -64,6 +86,10 @@ public class MapGenerator
         map = newMap;
     }
 
+    /// <summary>
+    /// Fills map with random noise
+    /// </summary>
+    /// <param name="map">Map</param>
     public void RandomFillMap(Map map)
     {
         for (int i = 0; i < map.GetWidth(); i++)
@@ -83,6 +109,13 @@ public class MapGenerator
         }
     }
 
+    /// <summary>
+    /// Calculates amount of neighbouring walls for given cell in given map
+    /// </summary>
+    /// <param name="map">Map</param>
+    /// <param name="x">X-Coordinate for cell</param>
+    /// <param name="y">Y-Coordinate for cell</param>
+    /// <returns>Sum of neighboring walls</returns>
     public int CountNeighboringWalls(Map map, int x, int y)
     {
         int sumOfWalls = 0;
